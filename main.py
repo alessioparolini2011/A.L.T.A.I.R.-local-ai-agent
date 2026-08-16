@@ -11,7 +11,7 @@ def main():
 
     # save the ai response and transforms it in a audio file
 
-    ai_response = request()
+    ai_response = request("Ciao, sono Alessio, come va?")
 
     speech(ai_response)
 
