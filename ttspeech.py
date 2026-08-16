@@ -6,6 +6,12 @@ import pygame
 
 import time
 
+import os 
+
+#aborting the pygame promotional text in the CLI 
+
+os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
+
 #initialazing the pygame mixer to play the audio 
 
 pygame.mixer.init()
