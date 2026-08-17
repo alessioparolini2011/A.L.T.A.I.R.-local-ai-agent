@@ -43,10 +43,9 @@ def ascolta():
                 text = voice["text"]
 
                 if text:
+
+                    print(f"Hai detto: {text}")
                     return text
 
-if __name__ == "__main__":
-    print("In ascolto... Parla pure!")
-    frase = ascolta()
-    print(f"Hai detto: {frase}")
+
     
