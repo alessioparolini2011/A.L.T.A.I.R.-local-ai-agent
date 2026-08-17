@@ -32,7 +32,7 @@ def request(prompt):
     })
 
     payload = {
-    "model" : "llama3.2",
+    "model" : "qwen2.5:7b",
     "messages" : history,
     "options": {
         "num_predict" : 400,
