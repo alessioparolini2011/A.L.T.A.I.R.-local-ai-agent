@@ -34,6 +34,9 @@ def speech(tts):
     while pygame.mixer.music.get_busy():
         time.sleep(0.1)
 
+    # Dopo che il ciclo di riproduzione è terminato:
+    pygame.mixer.music.unload()
+
     
 
 
