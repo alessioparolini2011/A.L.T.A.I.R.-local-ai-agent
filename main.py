@@ -6,14 +6,19 @@ from ttspeech import speech
 
 from ai_connect import request
 
+from sttext import ascolta
+
 
 def main():
 
-    # save the ai response and transforms it in a audio file
+    while True:
 
-    ai_response = request("Ciao, sono Alessio, come va?")
+        frase = ascolta()
 
-    speech(ai_response)
+        output = request(frase)
+
+        speech(output)
+
 
 
 if __name__ == "__main__":
