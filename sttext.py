@@ -25,7 +25,7 @@ def ascolta():
 
     reco = KaldiRecognizer(model, 16000)
 
-    #
+    #starts toget datas from microphone
 
     with sd.RawInputStream(
         samplerate=16000,
@@ -34,8 +34,23 @@ def ascolta():
         channels=1, 
         callback=callback,
     ):
+
+        #deleting the audio sd registered before I start to speak 
+
+        with q.mutex:
+            q.queue.clear()
+
+        print("IA in ascolto...")
+
+        
         while True: 
+
+            #put every audio block in the FIFO object
+
             data = q.get()
+
+            #if understands the voice input is end, use the model to transcribe it
+
             if reco.AcceptWaveform(data):
 
                 voice = json.loads(reco.Result())
