@@ -1,42 +1,19 @@
-#importing the libraries to create and play the response 
+#importing the librarie to create and play the response 
 
-from gtts import gTTS
+import pyttsx4
 
-import os 
+#initialazing the tts engine and some others funcitons
 
-#aborting the pygame promotional text in the CLI 
+engine = pyttsx4.init()
 
-os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
+engine.setProperty("rate", 120)
 
-import pygame
+voice = r"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Voices\Tokens\TTS_MS_IT-IT_ELSA_11.0"
 
-import time
-
-
-
-#initialazing the pygame mixer to play the audio 
-
-pygame.mixer.init()
-
+engine.setProperty("voice", voice )
 
 def speech(tts):
 
-    #transforming the AI response into a audio file and playing it
+    engine.say(tts)
 
-    ai_speech = gTTS(text=tts, lang="it", slow=False)
-
-    ai_speech.save("audio.mp3")
-
-    pygame.mixer.music.load("audio.mp3")
-
-    pygame.mixer.music.play()
-
-    while pygame.mixer.music.get_busy():
-        time.sleep(0.1)
-
-    # Dopo che il ciclo di riproduzione è terminato:
-    pygame.mixer.music.unload()
-
-    
-
-
+    engine.runAndWait()
