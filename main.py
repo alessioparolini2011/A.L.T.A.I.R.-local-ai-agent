@@ -17,7 +17,7 @@ def main():
 
         output = request(frase)
 
-        speech(output)
+        speech()
 
 
 
