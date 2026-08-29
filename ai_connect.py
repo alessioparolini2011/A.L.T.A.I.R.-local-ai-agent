@@ -56,6 +56,10 @@ def request(prompt):
 
     response = ""
 
+    #creating a list of punctuation to check if the AI model response contains some punctuation to avoid the AI model to speak in a robotic way
+
+    punctuation = [".", "!", "?"]
+
     for line in req.iter_lines():
 
         if line:
@@ -64,26 +68,36 @@ def request(prompt):
 
             token = chunk['message']['content']
 
-            response += token
+            print(token)
 
-            r.put(token)
+            #check if the token contains some puntuaction to avoid the AI model to speak in a robotic way
+
+            if any(p in token for p in punctuation):
+
+                for p in punctuation:
+
+                    if p in token:
+
+                        parts = token.split(p)
+
+                        response += parts[0] + p
+
+                        r.put(response)
+
+                        response = parts[1]
+
+                        break
+
+            else:
+
+                response += token
+
+
+    r.put(None) #put a None in the FIFO list to signal the end of the response
 
 
 
-
-
-
-
-    #save the response in the history
-
-    history.append(
-    {
-        "role" : "assistant",
-        "content" : response
-    }
-    )
-
-    return response
+    
 
 
 
