@@ -2,6 +2,8 @@
 
 import pyttsx4
 
+from shared import r
+
 #initialazing the tts engine and some others funcitons
 
 engine = pyttsx4.init()
@@ -12,7 +14,9 @@ voice = r"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Voices\Tokens\TTS_MS_IT-I
 
 engine.setProperty("voice", voice )
 
-def speech(tts):
+def speech():
+
+    tts= r.get()
 
     engine.say(tts)
 
