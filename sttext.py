@@ -19,7 +19,7 @@ def callback(indata, frames, time, status):
     return frames, time, status
 
 
-def ascolta():
+def hear():
 
     model = Model("model")
 
