@@ -1,12 +1,20 @@
 ''''
 This file create a connection with the Ollama Server running on http://localhost:11434 and sent one user prompt. 
+
+Also save the response in a history variable to create a conversation with the AI model.
+
+Finally put the response in a variable to be used in the main.py file and then sent to the ttspeech.py file to be spoken by the computer.
 '''
 
 
 
-#import the library to speak with the AI model 
+#import the library to speak with the AI model and the FIFO list
 
 import requests
+
+import json 
+
+from shared import r
 
 #putting in a variable the Ollama URL to speak with the model  --> DON'T CHANGE <--
 
@@ -17,10 +25,9 @@ URL = "http://localhost:11434/api/chat"
 history = [
     {
         "role" : "system",
-        "content" : "Sei un assistente AI dedicato alla conversazione. Sii conciso e colloquiale."
+        "content" : "You are a useful AI assistant that helps the user in his tasks and daily life. Speak in a friendly way and with shorts and clear answers. Answer in Italian."
     }
 ]
-
 
 
 
@@ -32,19 +39,40 @@ def request(prompt):
     })
 
     payload = {
-    "model" : "qwen2.5:7b",
+    "model" : "qwen2.5:7b-instruct",
     "messages" : history,
     "options": {
-        "num_predict" : 400,
-        "temperature" : 0.4
+        "num_predict" : 500,
+        "temperature" : 0.1
     },
-    "stream" : False
+    "stream" : True
 }
 
     #send the prompt to the AI model 
 
-    req = requests.post(URL, json=payload)
-    response = req.json()["message"]["content"]
+    req = requests.post(URL, json=payload, stream=True)
+
+    #get the response from the AI model 
+
+    response = ""
+
+    for line in req.iter_lines():
+
+        if line:
+
+            chunk = json.loads(line.decode("utf-8"))
+
+            token = chunk['message']['content']
+
+            response += token
+
+            r.put(token)
+
+
+
+
+
+
 
     #save the response in the history
 
