@@ -19,15 +19,21 @@ speakT = threading.Thread(target=speech, args=(), daemon=True)
 
 def main():
 
-    speakT.start()
+    try:
 
-    while True:
+        speakT.start()
 
-        phrase = hear()
+        while True:
 
-        request(phrase)
+            phrase = hear()
 
-        switcher.wait()
+            request(phrase)
+
+            switcher.wait()
+
+    except KeyboardInterrupt:
+
+        print("Program terminated by user.")
 
 
 if __name__ == "__main__":
