@@ -58,7 +58,7 @@ def request(prompt):
 
     #creating a list of punctuation to check if the AI model response contains some punctuation to avoid the AI model to speak in a robotic way
 
-    punctuation = [".", "!", "?"]
+    punctuation = [".", "!", "?" ,",", ";", ":"]
 
     for line in req.iter_lines():
 
@@ -96,8 +96,7 @@ def request(prompt):
     r.put(None) #put a None in the FIFO list to signal the end of the response
 
 
-
-    
-
-
-
+    history.append({
+        "role" : "assistant",
+        "content" : response
+    })
