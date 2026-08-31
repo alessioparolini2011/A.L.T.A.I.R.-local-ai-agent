@@ -2,7 +2,7 @@
 
 A.L.T.A.I.R. is a AI assitant developed by Alessio Parolini. Is a open source software.
 
-> [IMPORTANT!]
+> [!WARNING]
 > The project is still under development, many features will be added in future, so if you see bugs or have some adivces, don't wait to contact me on [my website](https://my-code-portfolio-ten.vercel.app/)
 
 ## Features:
@@ -29,13 +29,17 @@ If you don't have Python installed, use
 
 `winget install Python.Python.3.12`
 
-in your terminal
+in your terminal.
 
-Finally, run
+Install all required libraries with
+
+`pip install requirements.txt`
+
+and finally, run
 
 `python main.py`
 
-and enjoy!
+Enjoy!
 
 ## About me
 
