@@ -10,7 +10,7 @@ A.L.T.A.I.R. is a AI assitant developed by Alessio Parolini. Is a open source so
 
 - It runs **100% locally on your device**, using [Ollama models](https://ollama.com). **No data leave your PC!**
 
-- Use a **vocal I/0 system** using Vosk and Pyttsx4, that guarantee a quick and soft STT and TTS.
+- Use a **vocal I/O system** using Vosk and Pyttsx4, that guarantee a quick and soft STT and TTS.
 
 - It's based on a **double threading architecture**, so the performances are maximize
 
@@ -39,7 +39,7 @@ When it's done, **open a new tab (don't close the current)** and run
 `ollama run qwen2.5:7b-instruct `
 
 > [!WARNING]
-> This model needs about 6 GB on the RAM, but you can change it in ai_connect.py (line 40) with a smallest one. Remember to change te terminal command too!
+> This model needs about 6 GB on the RAM, but you can change it in ai_connect.py (line 40) with a smaller one (or bigger if you have a better hardware and you want better performance). Remember to change the terminal command too!
 
 **Without closing tabs**, come back to the first one. It's time to run the file!
 
@@ -47,7 +47,7 @@ If you don't have Python installed, use
 
 `winget install Python.Python.3.14`
 
-or the most recent version in your terminal.
+(or the most recent version) in your terminal.
 
 Install all required libraries with
 
