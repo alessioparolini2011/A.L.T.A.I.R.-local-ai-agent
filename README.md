@@ -3,8 +3,8 @@
 A.L.T.A.I.R. is a AI assitant developed by Alessio Parolini. Is a open source software.
 
 > [!WARNING]
-> The project is still under development, many features will be added in future, so if you see bugs or have some adivces, don't wait to contact me on [my website](https://my-code-portfolio-ten.vercel.app/)
-> Now only works in italian, my language, because is easier to me to try it. Other languagues will be added in future!
+> The project is still under development, many features will be added in future, so if you see bugs or have some adivces, don't wait to contact me on [my website](https://my-code-portfolio-ten.vercel.app/).
+> Now only works in italian, my language, because is easier to me to try it and see if everything is ok. Other languagues will be added in future!
 
 ## Features:
 
