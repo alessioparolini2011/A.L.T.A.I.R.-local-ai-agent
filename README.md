@@ -4,6 +4,7 @@ A.L.T.A.I.R. is a AI assitant developed by Alessio Parolini. Is a open source so
 
 > [!WARNING]
 > The project is still under development, many features will be added in future, so if you see bugs or have some adivces, don't wait to contact me on [my website](https://my-code-portfolio-ten.vercel.app/)
+> Now only works in italian, my language, because is easier to me to try it. Other languagues will be added in future!
 
 ## Features:
 
@@ -25,17 +26,34 @@ and then
 
 `git clone https://github.com/alessioparolini2011/A.L.T.A.I.R.-local-ai-agent`
 
+Now you have to install Ollama for use the local AI models. You can use
+
+`winget install Ollama.Ollama`
+
+When it's done, **open a new tab (don't close the current)** and run
+
+`ollama serve`
+
+**Open an another new tab (don't close the two precedent)**
+
+`ollama run qwen2.5:7b-instruct `
+
+> [!WARNING]
+> This model needs about 6 GB on the RAM, but you can change it in ai_connect.py (line 40) with a smallest one. Remember to change te terminal command too!
+
+**Without closing tabs**, come back to the first one. It's time to run the file!
+
 If you don't have Python installed, use
 
-`winget install Python.Python.3.12`
+`winget install Python.Python.3.14`
 
-in your terminal.
+or the most recent version in your terminal.
 
 Install all required libraries with
 
 `pip install requirements.txt`
 
-and finally, run
+And finally, run
 
 `python main.py`
 
