@@ -1,4 +1,4 @@
-import queue
+import asyncio
 
 from vosk import Model, KaldiRecognizer
 
@@ -6,27 +6,39 @@ import json
 
 import sounddevice as sd
 
-from shared import switcher
+from ttspeech import switcher
 
 
-#creating the fifo object
-q = queue.Queue()
+#creating the FIFO list to get the audio pack from the microphone
+
+pack = asyncio.Queue()
+
+#creating the FIFO list to send the audio to ai_connect.py as the prompt to the AI model
+
+message = asyncio.Queue()
 
 #initializing the vosk model
+
 model = Model("model")
 
 reco = KaldiRecognizer(model, 16000)
 
-def callback(indata, frames, time, status):
+async def hear():
 
-    #putting the audio pack in the list 
-    
-    if status:
-        print(status)
+    #getting the event loop to use it in the callback function
 
-    q.put(bytes(indata))
+    loop = asyncio.get_event_loop()
 
-def hear():
+    #creating the function to get the audio from the microphone and put it in the FIFO list
+
+    def callback(indata, frames, time, status): 
+
+        #putting the audio pack in the list 
+        
+        if status:
+            print(status)
+
+        loop.call_soon_threadsafe(pack.put_nowait, bytes(indata))
 
     #starts to get datas from microphone
 
@@ -39,20 +51,22 @@ def hear():
     ):
 
         #deleting the audio sd registered before I start to speak 
-        while not q.empty():
-            q.get()
+        while not pack.empty():
+            pack.get()
+
+            pack.task_done()
 
 
-        print("IA is ready to listen, please speak...")
+        print("A.L.T.A.I.R. is ready to listen, please speak...")
         
         while True: 
 
-            if switcher.is_set(): #if the switcher is True, it means the TTS is running, so the STT must wait
+            #put every audio block in the FIFO object
+            data = await pack.get()
+
+            if not switcher.is_set():
 
                 continue
-
-            #put every audio block in the FIFO object
-            data = q.get()
 
             #if understands the voice input is end, use the model to transcribe it
             if reco.AcceptWaveform(data):
@@ -61,5 +75,7 @@ def hear():
                 text = voice["text"]
 
                 if text:
-                    print(f"Hai detto: {text}")
-                    return text
+
+                    print(f"You said: {text}")
+
+                    await message.put(text) #put the transcribed text in the FIFO list to be used by ai_connect.py to send the prompt to the AI model
