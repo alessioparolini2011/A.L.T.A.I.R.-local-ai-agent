@@ -3,18 +3,22 @@ This file create a connection with the Ollama Server running on http://localhost
 
 Also save the response in a history variable to create a conversation with the AI model.
 
-Finally put the response in a variable to be used in the main.py file and then sent to the ttspeech.py file to be spoken by the computer.
+Finally put the response in a FIFO list to be used by the TTS function to give a voice to the AI model.
 '''
 
+#importing the libraries to create a connection with the Ollama Server, split response and send the user prompt
 
+import httpx
 
-#import the library to speak with the AI model and the FIFO list
-
-import requests
+import asyncio
 
 import json 
 
-from shared import r
+import re
+
+from ttspeech import res as r, switcher
+
+from sttext import message as m
 
 #putting in a variable the Ollama URL to speak with the model  --> DON'T CHANGE <--
 
@@ -31,72 +35,89 @@ history = [
 
 
 
-def request(prompt):
+async def request():
 
-    history.append({
-        "role" : "user", 
-        "content" : prompt
-    })
+    while True: 
 
-    payload = {
-    "model" : "qwen2.5:7b-instruct",
-    "messages" : history,
-    "options": {
-        "num_predict" : 500,
-        "temperature" : 0.1
-    },
-    "stream" : True
-}
+        prompt = await m.get()
 
-    #send the prompt to the AI model 
+        m.task_done()
 
-    req = requests.post(URL, json=payload, stream=True)
+        switcher.clear()
 
-    #get the response from the AI model 
+        history.append({
+            "role" : "user", 
+            "content" : prompt
+        })
 
-    response = ""
+        payload = {
+        "model" : "qwen2.5:7b-instruct",
+        "messages" : history,
+        "options": {
+            "num_predict" : 500,
+            "temperature" : 0.1
+        },
+        "stream" : True
+    }
 
-    #creating a list of punctuation to check if the AI model response contains some punctuation to avoid the AI model to speak in a robotic way
+        #create a variable to put in the history.append, one for split the response and a regex pattern
+        
+        response = ""
 
-    punctuation = [".", "!", "?" ,",", ";", ":"]
+        buffer = ""
 
-    for line in req.iter_lines():
+        splitter = re.compile(r"([^;.:?!]*[;.:?!])")
+        
 
-        if line:
+        #send the prompt to the AI model 
 
-            chunk = json.loads(line.decode("utf-8"))
+        async with httpx.AsyncClient(timeout=None) as client:
 
-            token = chunk['message']['content']
+            async with client.stream("POST", URL, json=payload) as req:
 
-            print(token)
+                async for line in req.aiter_lines():
 
-            #check if the token contains some puntuaction to avoid the AI model to speak in a robotic way
+                    if line:
 
-            if any(p in token for p in punctuation):
+                        chunk = json.loads(line)
 
-                for p in punctuation:
+                        token = chunk['message']['content']
 
-                    if p in token:
+                        response += token 
 
-                        parts = token.split(p)
-
-                        response += parts[0] + p
-
-                        r.put(response)
-
-                        response = parts[1]
-
-                        break
-
-            else:
-
-                response += token
+                        buffer += token
 
 
-    r.put(None) #put a None in the FIFO list to signal the end of the response
+                    #check if the token contains some puntuaction to split response and send it to the TSS before the whole response is ready
+
+                        part = re.findall(splitter, buffer) #find a complete sentence in the buffer to send it to the TTS
+
+                        for p in part:
+
+                            if p.strip():
+
+                                print(p)
+
+                                await r.put(p) #send to the TTS 
+
+                                buffer = buffer[len(p):] 
+
+        if buffer: #maybe the last phrase don't end with a puntuaction, so this is a last check to send all the response
+
+            await r.put(buffer)
+
+            await r.put(None)
+
+        else:
+
+            await r.put(None) #put a None in the FIFO list to signal the end of the response
 
 
-    history.append({
-        "role" : "assistant",
-        "content" : response
-    })
+        history.append({
+            "role" : "assistant",
+            "content" : response
+        })
+
+        if len(history) > 11:
+
+            del history[2:4] #delete the oldest messages to avoid the history to be too long and the AI model to forget the context of the conversation but keeps the system prompt.
