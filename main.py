@@ -1,36 +1,40 @@
-''''This is the main file. It groups together the functions by others files and call it. Also manage double threading. '''
+''''This is the main file of the project. It imports the functions and objects from the other files and runs them in a double thread. The first thread is used to give a voice to the AI model, while the second thread is used to listen to the user and send the prompt to the AI model. The main thread waits for the TTS to finish before listening to the user again. This avoids a loop where the TTS and STT are running at the same time and creating a loop.
+The main thread also handles the KeyboardInterrupt exception to terminate the program gracefully.'''
 
-#Import the functions and objects from the other files
+#Import the functions from the others files
 
-from ttspeech import speech
+from ttspeech import caller, switcher
 
 from ai_connect import request
 
 from sttext import hear
 
-import threading
 
-from shared import switcher
+#importing the librarie to use asynchronous functions
 
-#initialazing double thread
-
-speakT = threading.Thread(target=speech, args=(), daemon=True)
+import asyncio
 
 
-def main():
+#creating the main function 
 
-    try:
+async def main():
 
-        speakT.start()
+    print("Starting the program...")
 
-        while True:
+    switcher.set() #set the switcher to True to let the STT to run
 
-            phrase = hear()
+    try: 
 
-            request(phrase)
+        #start the asyncio gather
 
-            switcher.wait()
+        async with asyncio.TaskGroup() as tg:
 
+            tg.create_task(hear())
+            tg.create_task(request())
+            tg.create_task(caller())
+
+
+        
     except KeyboardInterrupt:
 
         print("Program terminated by user.")
@@ -38,4 +42,4 @@ def main():
 
 if __name__ == "__main__":
 
-    main()
+    asyncio.run(main())
