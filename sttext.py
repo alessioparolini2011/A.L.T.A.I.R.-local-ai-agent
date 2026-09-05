@@ -19,7 +19,7 @@ message = asyncio.Queue()
 
 #initializing the vosk model
 
-model = Model("model")
+model = Model("vosk_model")
 
 reco = KaldiRecognizer(model, 16000)
 
@@ -33,43 +33,38 @@ async def hear():
 
     def callback(indata, frames, time, status): 
 
-        #putting the audio pack in the list 
-        
-        if status:
-            print(status)
+        #putting the audio pack in the list
 
-        loop.call_soon_threadsafe(pack.put_nowait, bytes(indata))
+        loop.call_soon_threadsafe(pack.put_nowait, indata)
 
     #starts to get datas from microphone
 
     with sd.RawInputStream(
         samplerate=16000,
-        blocksize=8000,
+        blocksize=4096,
         dtype="int16",
         channels=1, 
         callback=callback,
     ):
 
-        #deleting the audio sd registered before I start to speak 
-        while not pack.empty():
-            pack.get()
-
-            pack.task_done()
-
-
         print("A.L.T.A.I.R. is ready to listen, please speak...")
-        
+
         while True: 
 
-            #put every audio block in the FIFO object
             data = await pack.get()
 
             if not switcher.is_set():
 
-                continue
+                pack.task_done()
 
-            #if understands the voice input is end, use the model to transcribe it
-            if reco.AcceptWaveform(data):
+                continue 
+
+            b_data = bytes(data)
+
+            #Check if the voice input is end (on an another thread because is a heavy operation)
+            is_final = await asyncio.to_thread(reco.AcceptWaveform, b_data)
+
+            if is_final: #if understand the input is finish, use the model to transcribe it
 
                 voice = json.loads(reco.Result())
                 text = voice["text"]
