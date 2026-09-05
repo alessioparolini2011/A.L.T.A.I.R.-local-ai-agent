@@ -1,0 +1,14 @@
+# Python environment and cache
+.venv/
+__pycache__/
+*.pyc
+
+# System and temporary files
+.DS_Store
+Thumbs.db
+
+# Speech and Voice AI Models
+vosk_model/
+piper_model/*.onnx
+vosk_temp.zip
+temp_vosk/
