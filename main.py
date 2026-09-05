@@ -19,8 +19,6 @@ import asyncio
 
 async def main():
 
-    print("Starting the program...")
-
     switcher.set() #set the switcher to True to let the STT to run
 
     try: 
@@ -41,5 +39,9 @@ async def main():
 
 
 if __name__ == "__main__":
+
+    print("Starting the program...\n")
+
+    print("A.L.T.A.I.R. is on. Ready?\n")
 
     asyncio.run(main())
