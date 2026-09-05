@@ -1,56 +1,68 @@
 '''
 This file is used to give a voice to the AI model. 
-It uses the pyttsx4 library to convert the text response from the AI model into speech.
-It runs in a separate thread, so can start talking while the AI response is still being generated.
+It runs in a subprocess the piper.exe, for a natural but fast and light response. 
 '''
 
-
-#importing the libraries to play the audio response from the AI model and to use asynchronous functions
-
-import pyttsx4
+#importing the libraries to synthesize and play the audio response from the AI model and to use asynchronous functions
 
 import asyncio
+
+import piper
+
+import sounddevice as sd
+
+import wave
+
+import time #for a micro-pause between every phrase
+
+import soundfile as sf
+
+import io #this library create a bytes buffer, to save temporarily the piper audio in the RAM instead of savwe it on the SSD
+
 
 #asyncio FIFO list, blocker and switcher to avoid loops
 
 switcher = asyncio.Event()
 
-blocker = False
-
 res = asyncio.Queue() #creating a FIFO list that to get AI splitted response from ai_connect
 
 
-async def caller(): #to activate the TTS function in a separate thread
+async def caller(): #get data from ai_connect and send to piper to synthesize the audio and call speaker() to play it
+
+    voice = piper.PiperVoice.load("piper_model/en_US-ryan-medium.onnx") #initializating the piper model
 
     while True:
 
-        phrase =  await res.get()
+        phrase = await res.get()
 
         if phrase is not None:
 
-            if phrase.strip():
+            buffer = io.BytesIO() #creating the bytes buffer 
 
-                await asyncio.to_thread(speak, phrase)
+            with wave.open(buffer, "wb") as wav_file:
+                voice.synthesize_wav(phrase, wav_file)
 
-        else: 
+            buffer.seek(0) #put the read cursor in the first position
 
-            print("A.L.T.A.I.R. finished. Is your turn now. ")
+            audio, samplerate = sf.read(buffer)
+
+            await asyncio.to_thread(speaker, audio, samplerate )
+
+            res.task_done()
+
+        else:
 
             switcher.set()
 
-        
-def speak(text): #to give a voice to the AI model
+            res.task_done()
 
-    #initializing engine, voice and speed (rate)
+            print("A.L.T.A.I.R. is ready to listen, please speak...")
 
-    engine = pyttsx4.init()
 
-    engine.setProperty("rate", 125) #set the speed of the voice
+def speaker(data, samplerate):
 
-    voice = r"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Voices\Tokens\TTS_MS_IT-IT_ELSA_11.0"
+    sd.play(data=data, samplerate=samplerate)
 
-    engine.setProperty("voice", voice )
+    sd.wait()
 
-    engine.say(text)
-
-    engine.runAndWait()
+    time.sleep(0.25)
