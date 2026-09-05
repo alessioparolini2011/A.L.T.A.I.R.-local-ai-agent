@@ -29,7 +29,7 @@ URL = "http://localhost:11434/api/chat"
 history = [
     {
         "role" : "system",
-        "content" : "You are a useful AI assistant that helps the user in his tasks and daily life. Speak in a friendly way and with shorts and clear answers. Answer in Italian."
+        "content" : "You are a useful AI assistant that helps the user in his tasks and daily life. Speak in a friendly way and with shorts and clear answers. Answer in English."
     }
 ]
 
