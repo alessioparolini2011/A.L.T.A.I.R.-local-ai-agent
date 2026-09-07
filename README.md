@@ -4,19 +4,18 @@ A.L.T.A.I.R. is a AI assitant developed by Alessio Parolini. Is a open source so
 
 > [!WARNING]
 > The project is still under development, many features will be added in future, so if you see bugs or have some adivces, don't wait to contact me on [my website](https://my-code-portfolio-ten.vercel.app/).
-> Now only works in italian, my language, because is easier to me to try it and see if everything is ok. Other languagues will be added in future!
 
 ## Features:
 
 - It runs **100% locally on your device**, using [Ollama models](https://ollama.com). **No data leave your PC!**
 
-- Use a **vocal I/O system** using Vosk and Pyttsx4, that guarantee a quick and soft STT and TTS.
+- Use a **vocal I/O system** using Vosk and PiperTTS, that guarantee a quick and soft STT and TTS.
 
-- It's based on a **double threading architecture**, so the performances are maximize
+- It's based on a **asynchronous architecture**, so the performances are maximize
 
 ## How to use?
 
-Good question. First at all, clone the repo on your PC. **Is recommended to don't install it on the C:/User/username, because it had to run with a PS command, so it's more safer install, for example, in the Desktop**
+Good question. First at all, clone the repo on your PC. **Is recommended to don't install it on the C:/User/your_username, because it had to run with a PS command, so it's more safer install, for example, in the Desktop**
 
 So first run in the terminal
 
@@ -52,6 +51,12 @@ If you don't have Python installed, use
 Install all required libraries with
 
 `pip install requirements.txt`
+
+Before start, **only the first time**, run
+
+`python resources.py`
+
+to download all the necessary resources for STT and TTS.
 
 And finally, run
 
